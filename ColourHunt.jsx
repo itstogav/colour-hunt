@@ -1,4 +1,4 @@
-"use client";
+import { loadStripe } from '@stripe/js'; "use client";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -384,6 +384,27 @@ function Onboarding({ onDone }) {
     },
   ];
 
+const handleSubscribe = async () => {
+  const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  
+  try {
+    const response = await fetch('/api/stripe-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'user@example.com' }),
+    });
+    
+    const { sessionId } = await response.json();
+    const result = await stripe.redirectToCheckout({ sessionId });
+    
+    if (result.error) {
+      console.error(result.error.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
   const cur = slides[step];
   const isLast = step === slides.length - 1;
 
@@ -431,7 +452,7 @@ function Onboarding({ onDone }) {
       <div style={{ padding:"0 28px", display:"flex", flexDirection:"column", gap:10 }}>
         {isLast ? (
           <>
-            <button className="btn btn-green" style={{ width:"100%" }} onClick={onDone}>
+            <button className="btn btn-green" style={{ width:"100%" }} onClick={handleSubscribe}>
               Start free 7-day trial
             </button>
             <button className="btn btn-ghost" style={{ width:"100%", fontSize:".78rem" }} onClick={onDone}>
