@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/next';
+
 export const metadata = {
   title: "Colour Hunt",
   description: "Hunt by colour. See differently. Nine photos, one colour, the clock is ticking.",
@@ -19,7 +21,10 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0 }}>{children}</body>
+      <body style={{ margin: 0, padding: 0 }}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
